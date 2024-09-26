@@ -37,8 +37,8 @@ def generate_launch_description():
 
     gui_arg = DeclareLaunchArgument("gui", default_value="true")
     sim_time_arg = DeclareLaunchArgument("use_sim_time", default_value="true")
-    x_pose_arg = DeclareLaunchArgument("x_pose", default_value="0")
-    y_pose_arg = DeclareLaunchArgument("y_pose", default_value="0")
+    x_pose_arg = DeclareLaunchArgument("x_pose", default_value="-5.33")
+    y_pose_arg = DeclareLaunchArgument("y_pose", default_value="-3.06")
 
     # Start up the Gazebo simulator
     start_gazebo = IncludeLaunchDescription(
