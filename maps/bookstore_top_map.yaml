@@ -77,4 +77,4 @@ edges:
   - v6
   - v7
 
-influence_radius: 0.3
+influence_radius: 0.5
