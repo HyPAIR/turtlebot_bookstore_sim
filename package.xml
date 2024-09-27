@@ -17,6 +17,7 @@
   <depend>topological_navigation</depend>
   <exec_depend>gazebo</exec_depend>
   <exec_depend>turtlebot3_gazebo</exec_depend>
+  <exec_depend>topological_msgs</exec_depend>
 
   <export>
     <build_type>ament_python</build_type>
