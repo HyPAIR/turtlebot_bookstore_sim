@@ -52,6 +52,6 @@ setup(
     license="TODO: License declaration",
     tests_require=["pytest"],
     entry_points={
-        "console_scripts": [],
+        "console_scripts": ["door_manager = turtlebot_bookstore_sim.door_manager:main"],
     },
 )
