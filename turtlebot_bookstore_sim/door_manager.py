@@ -154,8 +154,12 @@ class DoorManager(Node):
         """
         self.get_logger().info("Check Request at Door {}".format(request.door))
         with self._status_lock:
-            response.status = self._door_status[request.door]
-            return response
+            if request.door not in self._door_status:
+                response.status = "not_a_door"
+                return response
+            else:
+                response.status = self._door_status[request.door]
+                return response
 
     def _set_door_callback(self, request, response):
         """Set the status of a given door.
@@ -170,13 +174,21 @@ class DoorManager(Node):
         self.get_logger().info(
             "Set Request for Door {}; Status: {}".format(request.door, request.status)
         )
+
         assert request.door in self._door_status
         assert request.status == "open" or request.status == "closed"
         with self._status_lock:
-            self._door_status[request.door] = request.status
-            self._update_marker(request.door, request.status)
-            response.success = True
-            return response
+            if request.door not in self._door_status:
+                response.success = False
+                return response
+            elif request.status != "open" and request.status != "closed":
+                response.success = False
+                return response
+            else:
+                self._door_status[request.door] = request.status
+                self._update_marker(request.door, request.status)
+                response.success = True
+                return response
 
 
 def main(args=None):
