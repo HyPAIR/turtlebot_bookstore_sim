@@ -55,6 +55,7 @@ setup(
         "console_scripts": [
             "door_manager = turtlebot_bookstore_sim.door_manager:main",
             "open_door_server = turtlebot_bookstore_sim.open_door_server:main",
+            "policy_executor = turtlebot_bookstore_sim.policy_executor:main",
         ],
     },
 )
