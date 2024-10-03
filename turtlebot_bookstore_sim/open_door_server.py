@@ -5,6 +5,8 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
+from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rclpy.action import ActionServer
 from door_msgs.action import OpenDoor
 from door_msgs.srv import SetDoor
@@ -34,7 +36,11 @@ class OpenDoorServer(Node):
         self.get_logger().info("Set Door Client Active")
 
         self._action_server = ActionServer(
-            self, OpenDoor, "open_door", execute_callback=self._execute_callback
+            self,
+            OpenDoor,
+            "open_door",
+            execute_callback=self._execute_callback,
+            callback_group=MutuallyExclusiveCallbackGroup(),
         )
         self.get_logger().info("Open Door Server Started")
 
@@ -85,6 +91,7 @@ def main(args=None):
     rclpy.init(args=args)
 
     action_server = OpenDoorServer()
-    rclpy.spin(action_server)
+    executor = MultiThreadedExecutor()
+    rclpy.spin(action_server, executor=executor)
     action_server.destroy_node()
     rclpy.shutdown()
