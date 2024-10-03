@@ -6,6 +6,7 @@ Owner: Charlie Street
 """
 
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import SetParameter
 import launch
 import os
 
@@ -34,6 +35,7 @@ def generate_launch_description():
 
     ld = launch.LaunchDescription(
         [
+            SetParameter(name="use_sim_time", value=True),
             launch.actions.DeclareLaunchArgument(
                 "world", default_value=[world, ""], description="SDF world file"
             ),

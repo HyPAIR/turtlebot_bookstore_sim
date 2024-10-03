@@ -8,6 +8,7 @@ Owner: Charlie Street
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration
+from launch_ros.actions import SetParameter
 from launch import LaunchDescription
 from launch.actions import (
     SetEnvironmentVariable,
@@ -18,6 +19,9 @@ import os
 
 
 def generate_launch_description():
+
+    # Set sim time
+    set_sim_time = SetParameter(name="use_sim_time", value=True)
 
     # Get package directories
     launch_file_dir = os.path.join(
@@ -65,6 +69,7 @@ def generate_launch_description():
 
     # Add all the commands
     ld = LaunchDescription()
+    ld.add_action(set_sim_time)
     ld.add_action(set_turtle_model)
     ld.add_action(gui_arg)
     ld.add_action(sim_time_arg)

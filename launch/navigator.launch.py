@@ -7,6 +7,7 @@ Owner: Charlie Street
 
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
+from launch_ros.actions import SetParameter
 from launch import LaunchDescription
 from launch.actions import (
     SetEnvironmentVariable,
@@ -16,6 +17,9 @@ import os
 
 
 def generate_launch_description():
+
+    # Set sim time
+    set_sim_time = SetParameter(name="use_sim_time", value=True)
 
     turtlebot_nav2_dir = os.path.join(
         get_package_share_directory("turtlebot3_navigation2"), "launch"
@@ -60,6 +64,7 @@ def generate_launch_description():
 
     # Add the launch actions
     ld = LaunchDescription()
+    ld.add_action(set_sim_time)
     ld.add_action(set_turtle_model)
     ld.add_action(start_nav2)
     ld.add_action(start_top_nav)

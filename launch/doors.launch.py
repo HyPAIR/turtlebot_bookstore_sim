@@ -5,13 +5,17 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
+
 from launch.substitutions import LaunchConfiguration
-from launch import LaunchDescription
-from launch_ros.actions import Node
+from launch_ros.actions import Node, SetParameter
 from launch.actions import DeclareLaunchArgument
+from launch import LaunchDescription
 
 
 def generate_launch_description():
+
+    # Set sim time
+    set_sim_time = SetParameter(name="use_sim_time", value=True)
 
     # All launch args
     door_path = LaunchConfiguration("door_yaml")
@@ -39,6 +43,7 @@ def generate_launch_description():
     )
 
     ld = LaunchDescription()
+    ld.add_action(set_sim_time)
     ld.add_action(door_arg)
     ld.add_action(init_status_arg)
     ld.add_action(open_delay_arg)
