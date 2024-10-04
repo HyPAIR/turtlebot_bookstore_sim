@@ -28,6 +28,7 @@ def generate_launch_description():
     db_collection = LaunchConfiguration("db_collection")
     map_path = LaunchConfiguration("map")
     doors_on_edge = LaunchConfiguration("doors_on_edge")
+    mode = LaunchConfiguration("mode")
 
     db_connection_arg = DeclareLaunchArgument(
         "db_connection_string", default_value="localhost:27107"
@@ -38,6 +39,7 @@ def generate_launch_description():
     doors_on_edge_arg = DeclareLaunchArgument(
         "doors_on_edge", default_value=doors_on_edge_file
     )
+    mode_arg = DeclareLaunchArgument("mode")
 
     # Policy executor node
     policy_exec_node = Node(
@@ -51,6 +53,7 @@ def generate_launch_description():
                 "db_collection": db_collection,
                 "map": map_path,
                 "doors_on_edge": doors_on_edge,
+                "mode": mode,
             }
         ],
         output="screen",
@@ -63,6 +66,7 @@ def generate_launch_description():
     ld.add_action(db_collection_arg)
     ld.add_action(map_path_arg)
     ld.add_action(doors_on_edge_arg)
+    ld.add_action(mode_arg)
     ld.add_action(policy_exec_node)
 
     return ld

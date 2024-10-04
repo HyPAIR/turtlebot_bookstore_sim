@@ -36,6 +36,8 @@ class BookstorePolicyExecutor(Node):
         _open_door_client: The action client for opening doors
         _run_id: The ID for this run
         _policy_fn: A function
+        _mode: The execution mode (data, initial, or refined)
+        _goal_fn: A function which takes a state history and returns True if goal reached
     """
 
     def __init__(self):
@@ -47,20 +49,67 @@ class BookstorePolicyExecutor(Node):
         self.declare_parameter("db_collection", rclpy.Parameter.Type.STRING)
         self.declare_parameter("map", rclpy.Parameter.Type.STRING)
         self.declare_parameter("doors_on_edge", rclpy.Parameter.Type.STRING)
+        self.declare_parameter("mode", rclpy.Parameter.Type.STRING)
 
         self._run_id = random.getrandbits(32)
-        self._policy_fn = self._rand_action  # TODO: Generalise
         self._top_map = TopologicalMap(self.get_parameter("map").value)
 
         with open(self.get_parameter("doors_on_edge").value, "r") as yaml_in:
             self._doors_on_edge = yaml.load(yaml_in, Loader=yaml.FullLoader)
 
+        self._mode_setup()
+        self._db_setup()
+        self._setup_actions()
+
+        self.get_logger().info("Policy Executor Setup")
+
+    def _hundred_actions(self, history):
+        """Returns True if 100 actions executed (101 states in history).
+
+        Args:
+            history: The state history
+
+        Returns:
+            True if 100 actions have been executed
+        """
+        return len(history) > 100
+
+    def _at_goal_loc(self, history):
+        """Returns True if the robot is at the goal location (v8).
+
+        Args:
+            history: The state history
+
+        Returns:
+            True if the robot is at v8
+        """
+        return history[-1]["location"] == "v8"
+
+    def _mode_setup(self):
+        """Setup the policy and goal_fn for a given mode."""
+        self._mode = self.get_parameter("mode").value
+        if self._mode == "data":
+            self._policy_fn = self._rand_action
+            self._goal_fn = self._hundred_actions
+        elif self._mode == "initial":
+            self._policy_fn = self._initial_policy
+            self._goal_fn = self._at_goal_loc
+        elif self._mode == "refined":
+            self._policy_fn = None  # TODO: Fill in
+            self._goal_fn = self._at_goal_loc
+
+        self.get_logger().info("Executing {} Policy".format(self._mode))
+
+    def _db_setup(self):
+        """Setup the Mongo connection."""
         connect_str = self.get_parameter("db_connection_string").value
         db_name = self.get_parameter("db_name").value
         db_collection = self.get_parameter("db_collection").value
         self._db_collection = MongoClient(connect_str)[db_name][db_collection]
         self.get_logger().info("Connected to MongoDB")
 
+    def _setup_actions(self):
+        """Setup the action clients for all actions."""
         self._edge_client = ActionClient(self, NavigateEdge, "edge_navigation")
         self._edge_client.wait_for_server()
         self.get_logger().info("Edge Navigation Client Active")
@@ -72,8 +121,6 @@ class BookstorePolicyExecutor(Node):
         self._open_door_client = ActionClient(self, OpenDoor, "open_door")
         self._open_door_client.wait_for_server()
         self.get_logger().info("Open Door Client Active")
-
-        self.get_logger().info("Policy Executor Setup")
 
     def _create_initial_state(self):
         """Creates the initial state for policy execution.
@@ -175,6 +222,7 @@ class BookstorePolicyExecutor(Node):
         """
         doc = {}
         doc["run_id"] = self._run_id
+        doc["mode"] = self._mode
         doc["option"] = action
         doc["date_started"] = float(start.nanoseconds) / 1e9
         doc["date_finished"] = float(end.nanoseconds) / 1e9
@@ -304,8 +352,9 @@ class BookstorePolicyExecutor(Node):
         """Execute the policy until a termination condition is satisfied."""
 
         current_state = self._create_initial_state()
+        history = [current_state]
 
-        while True:  # TODO: Generalise
+        while not self._goal_fn(history):  # TODO: Generalise
             action = self._policy_fn(current_state)
             assert action in self._enabled_actions(current_state)
 
@@ -317,6 +366,8 @@ class BookstorePolicyExecutor(Node):
                 current_state = self._check_door(current_state)
             else:  # Edge action
                 current_state = self._edge_navigation(current_state, action)
+
+            history.append(current_state)
 
             if current_state is None:  # Error case
                 self.get_logger().error("Error During Policy Execution. Exiting.")
