@@ -14,6 +14,16 @@ tmux kill-server
 pkill -9 gzserver
 pkill -9 gzclient
 pkill -9 ros
+
+# Confirm that the node list is not empty
+NODE_LIST=$(ros2 node list)
+while [ ! -z "${NODE_LIST}" ]
+do
+    echo "Node List not empty yet..."
+    sleep 5s
+    NODE_LIST=$(ros2 node list)
+done
+echo "Node List Empty, one last sleep to be safe."
 sleep 10s
 
 
