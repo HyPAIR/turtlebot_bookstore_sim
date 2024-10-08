@@ -5,11 +5,12 @@ Author: Charlie Street
 Owner: Charlie Street
 """
 
-
+from ament_index_python.packages import get_package_share_directory
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node, SetParameter
 from launch.actions import DeclareLaunchArgument
 from launch import LaunchDescription
+import os
 
 
 def generate_launch_description():
@@ -17,12 +18,16 @@ def generate_launch_description():
     # Set sim time
     set_sim_time = SetParameter(name="use_sim_time", value=True)
 
+    # Get door file
+    bookstore_root = get_package_share_directory("turtlebot_bookstore_sim")
+    bookstore_door_path = os.path.join(bookstore_root, "maps/bookstore_door_map.yaml")
+
     # All launch args
     door_path = LaunchConfiguration("door_yaml")
     init_door_status = LaunchConfiguration("initial_status_list")
     open_delay = LaunchConfiguration("open_delay")
 
-    door_arg = DeclareLaunchArgument("door_yaml")
+    door_arg = DeclareLaunchArgument("door_yaml", default_value=bookstore_door_path)
     init_status_arg = DeclareLaunchArgument("initial_status_list")
     open_delay_arg = DeclareLaunchArgument("open_delay", default_value="10.0")
 

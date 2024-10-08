@@ -60,11 +60,12 @@ class BookstorePolicyExecutor(Node):
         self._mode_setup()
         self._db_setup()
         self._setup_actions()
-
         self.get_logger().info("Policy Executor Setup")
 
     def _hundred_actions(self, history):
         """Returns True if 100 actions executed (101 states in history).
+
+        This is used for data collection.
 
         Args:
             history: The state history
@@ -76,6 +77,8 @@ class BookstorePolicyExecutor(Node):
 
     def _at_goal_loc(self, history):
         """Returns True if the robot is at the goal location (v8).
+
+        This is used for the initial or refined plans.
 
         Args:
             history: The state history
