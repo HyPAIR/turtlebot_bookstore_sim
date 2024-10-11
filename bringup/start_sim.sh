@@ -4,6 +4,8 @@
 SESSION=turtlebot_bookstore_sim
 POLICY_MODE=$1
 MONGO_CONNECTION_STRING=$2
+DOOR_STATUS_FILE=$3
+DOOR_STATUS_INDEX=$4
 
 
 tmux -2 new-session -d -s $SESSION
@@ -19,7 +21,12 @@ tmux select-window -t $SESSION:navigation
 tmux send-keys "ros2 launch turtlebot_bookstore_sim navigator.launch.py" C-m
 
 tmux select-window -t $SESSION:door-manager
-tmux send-keys "ros2 launch turtlebot_bookstore_sim doors.launch.py" C-m
+if [ -z $DOOR_STATUS_FILE ] && [ -z $DOOR_STATUS_INDEX ] # If both not set, don't pass in
+then
+    tmux send-keys "ros2 launch turtlebot_bookstore_sim doors.launch.py" C-m
+else
+    tmux send-keys "ros2 launch turtlebot_bookstore_sim doors.launch.py initial_status_file:=$DOOR_STATUS_FILE initial_status_index:=$DOOR_STATUS_INDEX" C-m
+fi
 
 tmux select-window -t $SESSION:policy-executor
 # TODO: Deal with DB Collection names here

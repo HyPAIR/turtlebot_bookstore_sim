@@ -1,4 +1,5 @@
 #!/bin/bash
+# Checks for termination and then ensures everything is killed properly
 
 NODE=$(ros2 node list | grep /policy_executor)
 while [ ! -z "${NODE}" ]
