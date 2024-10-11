@@ -11,6 +11,7 @@ from door_msgs.srv import CheckDoor, SetDoor
 from rclpy.node import Node
 from threading import Lock
 from shapely import Point
+import random
 import rclpy
 import yaml
 
@@ -37,16 +38,15 @@ class DoorManager(Node):
         super().__init__("door_manager")
 
         self.declare_parameter("door_yaml", rclpy.Parameter.Type.STRING)
-        self.declare_parameter("initial_status_list", rclpy.Parameter.Type.STRING_ARRAY)
+        self.declare_parameter("initial_status_file", rclpy.Parameter.Type.STRING)
+        self.declare_parameter("initial_status_index", rclpy.Parameter.Type.INTEGER)
         self._status_lock = Lock()
 
         with open(self.get_parameter("door_yaml").value, "r") as yaml_in:
             door_list = yaml.load(yaml_in, Loader=yaml.FullLoader)
 
-        init_status_list = self.get_parameter("initial_status_list").value
-
         with self._status_lock:
-            self._initialise_doors(door_list, init_status_list)
+            self._initialise_doors(door_list)
 
         # Publish markers
         latching_qos = QoSProfile(
@@ -68,13 +68,32 @@ class DoorManager(Node):
 
         self.get_logger().info("Door Manager Started.")
 
-    def _initialise_doors(self, door_list, init_status_list):
+    def _initialise_doors(self, door_list):
         """Initialise the doors.
 
         Args:
             door_list: A list of dictionaries with door names and coordinates
-            init_status_list: A list of initial door statuses (open or closed)
         """
+        initial_status_file = self.get_parameter("initial_status_file").value
+        initial_status_idx = self.get_parameter("initial_status_index").value
+
+        # Read from file if both parameters set
+        if initial_status_file != "not_set" and initial_status_idx != -1:
+            self.get_logger().info("Reading Door Status From File.")
+            with open(initial_status_file, "r") as yaml_in:
+                init_status_list = yaml.load(yaml_in, Loader=yaml.FullLoader)[
+                    initial_status_idx
+                ]
+        else:  # Sample from door file if door status not manually specified
+            self.get_logger().info("Sampling Door Status.")
+            init_status_list = []
+            for i in range(len(door_list)):
+                init_status_list.append(
+                    "closed" if random.random() <= door_list[i]["p_closed"] else "open"
+                )
+
+        self.get_logger().info("Initial Door Status: {}".format(init_status_list))
+
         self._door_pos = {}
         self._door_status = {}
 

@@ -19,7 +19,7 @@ tmux select-window -t $SESSION:navigation
 tmux send-keys "ros2 launch turtlebot_bookstore_sim navigator.launch.py" C-m
 
 tmux select-window -t $SESSION:door-manager
-tmux send-keys "ros2 launch turtlebot_bookstore_sim doors.launch.py initial_status_list:=[open,closed,open,closed,open,closed]" C-m
+tmux send-keys "ros2 launch turtlebot_bookstore_sim doors.launch.py" C-m
 
 tmux select-window -t $SESSION:policy-executor
 # TODO: Deal with DB Collection names here

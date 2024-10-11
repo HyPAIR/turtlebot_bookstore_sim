@@ -24,18 +24,30 @@ def generate_launch_description():
 
     # All launch args
     door_path = LaunchConfiguration("door_yaml")
-    init_door_status = LaunchConfiguration("initial_status_list")
+    init_status_file = LaunchConfiguration("initial_status_file")
+    initial_status_idx = LaunchConfiguration("initial_status_index")
     open_delay = LaunchConfiguration("open_delay")
 
     door_arg = DeclareLaunchArgument("door_yaml", default_value=bookstore_door_path)
-    init_status_arg = DeclareLaunchArgument("initial_status_list")
+    init_status_file_arg = DeclareLaunchArgument(
+        "initial_status_file", default_value="not_set"
+    )
+    initial_status_idx_arg = DeclareLaunchArgument(
+        "initial_status_index", default_value="-1"
+    )
     open_delay_arg = DeclareLaunchArgument("open_delay", default_value="10.0")
 
     door_manager_node = Node(
         package="turtlebot_bookstore_sim",
         executable="door_manager",
         name="door_manager",
-        parameters=[{"door_yaml": door_path, "initial_status_list": init_door_status}],
+        parameters=[
+            {
+                "door_yaml": door_path,
+                "initial_status_file": init_status_file,
+                "initial_status_index": initial_status_idx,
+            }
+        ],
         output="screen",
     )
 
@@ -50,7 +62,8 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(set_sim_time)
     ld.add_action(door_arg)
-    ld.add_action(init_status_arg)
+    ld.add_action(init_status_file_arg)
+    ld.add_action(initial_status_idx_arg)
     ld.add_action(open_delay_arg)
     ld.add_action(door_manager_node)
     ld.add_action(open_door_node)
