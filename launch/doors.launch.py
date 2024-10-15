@@ -20,7 +20,9 @@ def generate_launch_description():
 
     # Get door file
     bookstore_root = get_package_share_directory("turtlebot_bookstore_sim")
-    bookstore_door_path = os.path.join(bookstore_root, "maps/bookstore_door_map.yaml")
+    bookstore_door_path = os.path.join(
+        bookstore_root, "maps/bookstore/bookstore_door_map.yaml"
+    )
 
     # All launch args
     door_path = LaunchConfiguration("door_yaml")

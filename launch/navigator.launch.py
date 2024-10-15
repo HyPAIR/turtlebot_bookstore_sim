@@ -33,8 +33,8 @@ def generate_launch_description():
     # Set turtlebot model env var
     set_turtle_model = SetEnvironmentVariable(name="TURTLEBOT3_MODEL", value="waffle")
 
-    map_file = os.path.join(bookstore_root, "maps/bookstore.yaml")
-    top_map_file = os.path.join(bookstore_root, "maps/bookstore_top_map.yaml")
+    map_file = os.path.join(bookstore_root, "maps/bookstore/bookstore.yaml")
+    top_map_file = os.path.join(bookstore_root, "maps/bookstore/bookstore_top_map.yaml")
     # This is a modded version of the standard turtlebot nav params
     # I've set it to set an initial robot pose for AMCL
     # There may also be minor adjustments to obstacle inflation

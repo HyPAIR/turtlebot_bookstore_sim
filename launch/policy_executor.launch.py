@@ -19,8 +19,10 @@ def generate_launch_description():
     set_sim_time = SetParameter(name="use_sim_time", value=True)
 
     root_dir = get_package_share_directory("turtlebot_bookstore_sim")
-    top_map_file = os.path.join(root_dir, "maps/bookstore_top_map.yaml")
-    doors_on_edge_file = os.path.join(root_dir, "maps/bookstore_doors_on_edge.yaml")
+    top_map_file = os.path.join(root_dir, "maps/bookstore/bookstore_top_map.yaml")
+    doors_on_edge_file = os.path.join(
+        root_dir, "maps/bookstore/bookstore_doors_on_edge.yaml"
+    )
 
     # All launch args
     db_connection_string = LaunchConfiguration("db_connection_string")
