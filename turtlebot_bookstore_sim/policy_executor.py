@@ -9,6 +9,7 @@ Owner: Charlie Street
 """
 
 from topological_navigation.topological_map import TopologicalMap
+from refine_plan.models.policy import Policy
 from refine_plan.models.state_factor import StateFactor
 from topological_msgs.action import NavigateEdge
 from refine_plan.models.state import State
@@ -35,7 +36,8 @@ class BookstorePolicyExecutor(Node):
         _check_door_client: The client for the check door service
         _open_door_client: The action client for opening doors
         _run_id: The ID for this run
-        _policy_fn: A function
+        _refined_policy: The refined policy, if used in this instance
+        _policy_fn: A function describing robot policy execution
         _mode: The execution mode (data, initial, or refined)
         _goal_fn: A function which takes a state history and returns True if goal reached
     """
@@ -98,7 +100,10 @@ class BookstorePolicyExecutor(Node):
             self._policy_fn = self._initial_policy
             self._goal_fn = self._at_goal_loc
         elif self._mode == "refined":
-            self._policy_fn = None  # TODO: Fill in
+            self._refined_policy = Policy(
+                {}, policy_file="../params/fake_museum_refined_policy.yaml"
+            )
+            self._policy_fn = self._refined_policy.get_action
             self._goal_fn = self._at_goal_loc
 
         self.get_logger().info("Executing {} Policy".format(self._mode))
