@@ -101,7 +101,7 @@ class BookstorePolicyExecutor(Node):
             self._goal_fn = self._at_goal_loc
         elif self._mode == "refined":
             self._refined_policy = Policy(
-                {}, policy_file="../params/fake_museum_refined_policy.yaml"
+                {}, policy_file="../params/bookstore_refined_policy.yaml"
             )
             self._policy_fn = self._refined_policy.get_action
             self._goal_fn = self._at_goal_loc

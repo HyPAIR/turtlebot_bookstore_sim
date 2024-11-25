@@ -4,7 +4,7 @@
 
 MODE=$1
 MONGO_CONNECTION_STRING=$2
-DOOR_STATUS_FILE=../params/experiment_door_status.yaml
+DOOR_STATUS_FILE=../params/NOT_A_FILE.yaml
 
 for RUN in {0..99..1};
 do

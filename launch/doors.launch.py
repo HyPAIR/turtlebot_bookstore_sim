@@ -37,7 +37,7 @@ def generate_launch_description():
     initial_status_idx_arg = DeclareLaunchArgument(
         "initial_status_index", default_value="-1"
     )
-    open_delay_arg = DeclareLaunchArgument("open_delay", default_value="10.0")
+    open_delay_arg = DeclareLaunchArgument("open_delay", default_value="30.0")
 
     door_manager_node = Node(
         package="turtlebot_bookstore_sim",
